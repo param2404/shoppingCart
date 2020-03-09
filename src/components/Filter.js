@@ -17,7 +17,7 @@ export default function Filter(props) {
   const classes = useStyles();
   const [sort, setSort] = React.useState('name');
   const [search, setSearch] = React.useState('');
-  const [searchedproduct, setSearchedProduct] = React.useState('')
+  const [searchedproduct, setSearchedProduct] = React.useState()
   const { products } = props;
 
 
@@ -50,7 +50,7 @@ export default function Filter(props) {
       <Select
         native
         value={sort}
-        onChange={e => handleProductFilter(e)}
+        onChange={e=>handleProductFilter(e)}
         inputProps={{
           name: 'sort',
           id: 'age-native-simple',
@@ -65,7 +65,10 @@ export default function Filter(props) {
       {products.map((item, key) => (
         <div key={key} style={{ display: 'flex' }}>
           <div> {item.productName} {item.productQuantity} {item.timestamp}</div><br />
-      </div>))}
+        </div>))}
+      
+      <hr />
+      {searchedproduct}
     </FormControl>
   );
 }

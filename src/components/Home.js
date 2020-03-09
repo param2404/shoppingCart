@@ -43,19 +43,17 @@ const Home = React.memo(
 
 
 
-    const addProduct = async(productName, productQuantity) => {
-      await setProducts(products => [...products, { productName, productQuantity, timestamp: new Date().toString() }])
-      setFilteredProducts(products)
+    const addProduct = (productName, productQuantity) => {
+      setProducts(products => [...products, { productName, productQuantity, timestamp: new Date().toString() }])
+      setFilteredProducts(products => [...products, { productName, productQuantity, timestamp: new Date().toString() }])
     }
 
 
-    const deleteProduct = async(e, index) => {
+    const deleteProduct = ((e, index) => {
       e.preventDefault()
-      await setProducts(products.filter((ele, i) => index !== i),
-      setFilteredProducts(products)
-
-      )
-    }
+      setProducts(products.filter((ele, i) => index !== i))
+      setFilteredProducts(products.filter((ele, i) => index !== i))
+    })
 
     console.log(filteredProducts)
     const handleFilter = useCallback((sort) => {
