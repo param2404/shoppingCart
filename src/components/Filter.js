@@ -17,37 +17,25 @@ export default function Filter(props) {
   const classes = useStyles();
   const [sort, setSort] = React.useState('name');
   const [search, setSearch] = React.useState('');
-  const [searchedproduct,setSearchedProduct]=React.useState('')
+  const [searchedproduct, setSearchedProduct] = React.useState('')
   const { products } = props;
 
 
-  // const List = React.memo(({ products }) => {
-  //   return products
-  // }); 
 
-  const handleChange = useCallback((event) => {
-    setSort(event.target.value)
-    switch (sort) {
-      case 'name':
-        products.sort((a, b) => (a.productName > b.productName) ? 1 : (a.productName === b.productName) ? ((a.productQuantity > b.productQuantity) ? 1 : -1) : -1)
-        break;
-      case 'quantity':
-        products.sort((a, b) => (a.productQuantity > b.productQuantity) ? 1 : (a.productQuantity === b.productQuantity) ? ((a.productName > b.productName) ? 1 : -1) : -1)
-        break;
-      case 'timestamp':
-        products.sort((a, b) => (a.timestamp > b.timestamp) ? 1 : -1)
-        break;
-      default:
-        break;
-    }
+  const handleProductFilter = useCallback((event, value) => {
+    setSort(value)
+    console.log(event.target.value)
+    props.handleFilter(event.target.value)
   }
-)
+  )
 
 
   useEffect(() => {
     const timer = setTimeout(() => {
       console.log('ki')
-      setSearchedProduct(products.filter(product => product.productName.includes(search)));
+      if (search) {
+        setSearchedProduct(products.filter(product => product.productName.includes(search)));
+      }
     }, 3000);
     return () => clearTimeout(timer);
   }, [search]);
@@ -55,13 +43,14 @@ export default function Filter(props) {
 
 
 
+  console.log(products)
   return (
     <FormControl className={classes.formControl}>
       <h2>Sort By</h2>
       <Select
         native
         value={sort}
-        onChange={handleChange}
+        onChange={e => handleProductFilter(e)}
         inputProps={{
           name: 'sort',
           id: 'age-native-simple',
@@ -73,8 +62,10 @@ export default function Filter(props) {
       </Select>
       <br /><br />
       <TextField id="outlined" label="Search field" name="search" value={search} onChange={e => setSearch(e.target.value)} type="search" variant="outlined" />
-
-      {/* <List products={products}/> */}
+      {products.map((item, key) => (
+        <div key={key} style={{ display: 'flex' }}>
+          <div> {item.productName} {item.productQuantity} {item.timestamp}</div><br />
+      </div>))}
     </FormControl>
   );
 }

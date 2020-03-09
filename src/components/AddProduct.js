@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import { Grid, TextField, Button ,Divider} from '@material-ui/core';
+import { Grid, TextField, Button, Divider } from '@material-ui/core';
 
 
 const useStyles = makeStyles(theme => ({
@@ -34,21 +34,16 @@ export default function AddProduct(props) {
   const { addProduct } = props;
 
 
-  var date = new Date();
-  var timestamp = date.getTime();
-
-
-
   const onSubmit = (event) => {
     event.preventDefault();
-    addProduct({ productName, productQuantity ,timestamp});
+    addProduct(productName, productQuantity);
     setProductName('')
     setProductQuantity('')
   }
 
   return (
     <Grid container >
-      <Divider/>
+      <Divider />
       <Typography component="h1" variant="h5" className={classes.head}>
         Add Product
         </Typography>
@@ -62,7 +57,7 @@ export default function AddProduct(props) {
             label="Product Name"
             name="productName"
             value={productName}
-            onChange={e=>setProductName(e.target.value)}
+            onChange={e => setProductName(e.target.value)}
             autoFocus
           />
           <TextField
@@ -74,7 +69,7 @@ export default function AddProduct(props) {
             type="number"
             id="productQuantity"
             value={productQuantity}
-            onChange={e=>setProductQuantity(e.target.value)}
+            onChange={e => setProductQuantity(e.target.value)}
           /></Grid>
         <Button
           type="submit"
