@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Table, TableContainer, TableBody, TableCell, TableHead, TableRow, Typography, IconButton } from '@material-ui/core';
+import { Table, TableContainer, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core';
 import Delete from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles(theme => ({
@@ -16,7 +16,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const AllProduct = (props) => {
+const AllProduct = React.memo((props) => {
     const classes = useStyles();
     const { products, deleteProduct } = props;
     console.log("all Product", props);
@@ -28,13 +28,13 @@ const AllProduct = (props) => {
         <Typography component="h1" variant="h5" className={classes.head}>
             All Products
         </Typography>
-        <TableContainer className={classes.container}>
+    <TableContainer className={classes.container}>
             <Table >
                 <TableHead>
                     <TableRow>
                         <TableCell>Product Name</TableCell>
                         <TableCell>Product Quantity</TableCell>
-                        <TableCell>Product Timestamp</TableCell>
+                        {/* <TableCell>Product Timestamp</TableCell> */}
                         <TableCell align="right">Delete</TableCell>
                     </TableRow>
                 </TableHead>
@@ -43,12 +43,13 @@ const AllProduct = (props) => {
                         <TableRow key={i} id={i}>
                             <TableCell>{product.productName}</TableCell>
                             <TableCell>{product.productQuantity}</TableCell>
-                            <TableCell>{product.timestamp}</TableCell>
-                            <TableCell align="right" onClick={e => deleteProduct(e, i)}><Delete/></TableCell>
+                            {/* <TableCell>{product.timestamp}</TableCell> */}
+                            <TableCell align="right" onClick={e => deleteProduct(e, i)}><Delete /></TableCell>
                         </TableRow>))}
                 </TableBody>
             </Table>
-        </TableContainer></>
+        </TableContainer>
+        </>
     );
-}
+})
 export default AllProduct

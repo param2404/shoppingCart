@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Grid, Paper, Container, Divider } from '@material-ui/core';
 import AddProduct from './AddProduct';
 import Filter from './Filter';
+import Search from './Search';
 import AllProduct from './AllProduct';
 
 
@@ -34,69 +35,90 @@ const useStyles = makeStyles(theme => ({
 
 
 
-const Home = React.memo(
-  () => {
-    const classes = useStyles();
-    const [products, setProducts] = useState([]);
-    const [filteredProducts, setFilteredProducts] = useState([products])
-    console.log("reseting", products);
+const Home = React.memo(() => {
+  const classes = useStyles();
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [searchKey, setSearchKey] = useState();
+  console.log("reseting", products);
 
 
+  ////////////Add //////////
+  const addProduct = useCallback((productName, productQuantity) => {
+    setProducts(products => [...products, { productName, productQuantity, timestamp: new Date() }])
+    // setFilteredProducts(products => [...products, { productName, productQuantity, timestamp: new Date().toString() }])
+  })
 
-    const addProduct = (productName, productQuantity) => {
-      setProducts(products => [...products, { productName, productQuantity, timestamp: new Date().toString() }])
-      setFilteredProducts(products => [...products, { productName, productQuantity, timestamp: new Date().toString() }])
+  ///////////Delete/////////
+  const deleteProduct = useCallback((e, index) => {
+    e.preventDefault()
+    setProducts(products.filter((ele, i) => index !== i))
+    setFilteredProducts(filteredProducts.filter((ele, i) => index !== i))
+  }, [products, filteredProducts])
+
+  ////////search////////
+  const searchedData = useCallback((result, key) => {
+    if (key) {
+      setFilteredProducts(result)
+    } else {
+      setFilteredProducts([]);
     }
+    setSearchKey(key)
+  }, [])
 
 
-    const deleteProduct = ((e, index) => {
-      e.preventDefault()
-      setProducts(products.filter((ele, i) => index !== i))
-      setFilteredProducts(products.filter((ele, i) => index !== i))
-    })
-
-    console.log(filteredProducts)
-    const handleFilter = useCallback((sort) => {
-      console.log(sort)
-      switch (sort) {
-        case 'name':
-
-          setFilteredProducts(filteredProducts.sort((a, b) => (a.productName > b.productName) ? 1 : (a.productName === b.productName) ? ((a.productQuantity > b.productQuantity) ? 1 : -1) : -1))
-          break;
-        case 'quantity':
-
-          setFilteredProducts(filteredProducts.sort((a, b) => (a.productQuantity > b.productQuantity) ? 1 : (a.productQuantity === b.productQuantity) ? ((a.productName > b.productName) ? 1 : -1) : -1))
-          break;
-        case 'timestamp':
-
-          setFilteredProducts(filteredProducts.sort((a, b) => (a.timestamp > b.timestamp) ? 1 : -1))
-          break;
-        default:
-
-          setFilteredProducts(filteredProducts.sort((a, b) => (a.productName > b.productName) ? 1 : (a.productName === b.productName) ? ((a.productQuantity > b.productQuantity) ? 1 : -1) : -1))
-          break;
+  //////Filter List/////////
+  const saveFilteredItems = useCallback(
+    sortedItems => {
+      if (searchKey) {
+        setFilteredProducts(sortedItems);
+      } else {
+        setProducts(sortedItems);
       }
-    }
-    )
+    },
+    [searchKey]
+  );
 
-    return (
-      <Container fixed component="main" maxWidth="xs">
-        <CssBaseline />
-        <Paper className={classes.paper}>
-          <Grid container >
-            <Typography component="h1" variant="h5" className={classes.head}>
-              SHOPPING CART
+
+  return (
+    <Container fixed component="main" maxWidth="xs">
+      <CssBaseline />
+      <Paper className={classes.paper}>
+        <Grid container >
+          <Typography component="h1" variant="h5" className={classes.head}>
+            SHOPPING CART
         </Typography>
-            <Divider />
-            <Grid item ><AddProduct addProduct={addProduct} /></Grid>
-            <Divider />
-            <Grid item ><Filter products={filteredProducts} handleFilter={handleFilter} /></Grid>
-            <Divider />
-            <Grid item ><AllProduct products={products} deleteProduct={deleteProduct} /></Grid>
+          <Divider />
+          <Grid item ><AddProduct addProduct={addProduct} /></Grid>
+          <Divider />
+          <Grid><Search products={products} searchedData={searchedData} /></Grid>
+          <Divider />
+          {filteredProducts.length > 0 && searchKey ? (
+            <Filter
+              items={filteredProducts}
+              saveFilteredItems={saveFilteredItems}
+            />
+          ) : filteredProducts.length === 0 && searchKey ? null : (
+            <Filter items={products} saveFilteredItems={saveFilteredItems} />
+          )}
+          <Divider />
+          <Grid item >
+           
+            {products.length > 0 ? (
+              filteredProducts.length > 0 ? (
+                <AllProduct products={filteredProducts} deleteProduct={deleteProduct} />
+              ) : filteredProducts.length === 0 && searchKey ? (
+                <div style={{ color: "red", margin: "20px" }}>No Result Found</div>
+              ) : (
+                    <AllProduct products={products} deleteProduct={deleteProduct} />
+                  )
+            ) : null}
+
           </Grid>
-        </Paper>
-      </Container>
-    );
-  }
+        </Grid>
+      </Paper>
+    </Container>
+  );
+}
 )
 export default Home

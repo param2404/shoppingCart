@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import Progress from './Loader';
 import { Grid, TextField, Button, Divider } from '@material-ui/core';
 
 
@@ -27,19 +28,30 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function AddProduct(props) {
+const AddProduct = React.memo((props) => {
   const [productName, setProductName] = useState('');
   const [productQuantity, setProductQuantity] = useState('');
+  const [Loader,setLoader]=useState(false)
   const classes = useStyles();
+  const inputRef = useRef();
   const { addProduct } = props;
 
 
-  const onSubmit = (event) => {
+  const onSubmit = useCallback((event) => {
     event.preventDefault();
-    addProduct(productName, productQuantity);
+    setTimeout(()=>{
+      addProduct(productName, productQuantity);
+      setLoader(false)
+    }, 500)
+    setLoader(true)
     setProductName('')
     setProductQuantity('')
-  }
+  },[productQuantity,productName,addProduct])
+
+  useEffect(() => {
+    inputRef.current.focus();
+  },[inputRef])
+
 
   return (
     <Grid container >
@@ -47,18 +59,19 @@ export default function AddProduct(props) {
       <Typography component="h1" variant="h5" className={classes.head}>
         Add Product
         </Typography>
-      <form className={classes.form} onSubmit={onSubmit}>
+  <form className={classes.form} onSubmit={onSubmit}>
         <Grid className={classes.addproduct}>
           <TextField
             variant="outlined"
             margin="normal"
+            inputRef={inputRef}
             required
             id="productName"
             label="Product Name"
             name="productName"
             value={productName}
             onChange={e => setProductName(e.target.value)}
-            autoFocus
+           
           />
           <TextField
             variant="outlined"
@@ -70,7 +83,8 @@ export default function AddProduct(props) {
             id="productQuantity"
             value={productQuantity}
             onChange={e => setProductQuantity(e.target.value)}
-          /></Grid>
+          />
+        </Grid>
         <Button
           type="submit"
           variant="contained"
@@ -80,6 +94,13 @@ export default function AddProduct(props) {
           Submit
           </Button>
       </form>
+      {Loader ? (
+        <div>
+          <Progress />
+        </div>
+      ) : ""}
     </Grid>
   );
-}
+})
+
+export default AddProduct;
